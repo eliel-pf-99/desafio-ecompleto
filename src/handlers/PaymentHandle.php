@@ -31,8 +31,9 @@ class PaymentHandle
      * Função handle, lida com o retorno do service direcionando o resulto para alteração correta no banco de dados.
      * @param stdClass $payload -> resposta da API
      * @param string $orderId -> id do pedido
+     * @return array
      */
-    public function handle(stdClass $payload, string $orderId){
+    public function handle(stdClass $payload, string $orderId): array{
         if($payload->Error){
             throw new Exception("Erro no servidor. {$payload->Message}");
         }
@@ -45,16 +46,18 @@ class PaymentHandle
             throw new Exception("Falha ao atualizar a tabela pedidos_pagamentos");
         }
         
-        $updateOrder = match($payload->Transaction_code){
-            "00" => $this->updateOrder($orderId, 2),
-            "01" => $this->updateOrder($orderId, 1),
-            "02", "03", "04" => $this->updateOrder($orderId, 3),
+        $situation = match($payload->Transaction_code){
+            "00" => 2,
+            "01" => 1,
+            "02", "03", "04" => 3
         };
 
+        $updateOrder = $this->updateOrder($orderId, $situation);
+    
         if(!$updateOrder){
             throw new Exception("Falha ao atualizar a tabela pedidos");
         }
 
-        
+        return ['id' => $orderId, 'situacao' => $situation];
     }
 }
