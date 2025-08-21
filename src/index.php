@@ -13,6 +13,8 @@ $db = new Database();
 
 
 function getOrdersId(){
+    echo $_ENV['API_ENDPOINT'];
+
     global $db;
     
     $customerRepo = new CustomerRepository($db);
@@ -47,10 +49,12 @@ function getOrdersId(){
         $orderPayments = $orderPaymentRepo->getOrdersWithPaymentCreditCard($orders, $paymentWayId);
         
         $dto = new DataDTO($orderRepo, $orderPaymentRepo, $customerRepo);
-        $data = $dto->generateData($orderPayments[1]);
-        echo "<pre>";
-        print_r($data);
-        echo "<\pre>";
+        $data = $dto->generateData($orderPayments[0]);
+        
+        $handler = new PaymentHandle();
+        $service = new PaymentService($handler);
+
+        $service->processarPagamentos($data);
 
         
 

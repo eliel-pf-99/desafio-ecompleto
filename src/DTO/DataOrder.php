@@ -22,7 +22,7 @@ class DataOrder
      */
     public static function create(array $orderPayment, array $order): self {
 
-        $external_order_id = $orderPayment['id'];
+        $external_order_id = $order['id'];
         $amount = $order['valor_total'];
         $card_number = $orderPayment['num_cartao'];
         $card_cvv = $orderPayment['codigo_verificacao'];
