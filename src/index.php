@@ -49,9 +49,9 @@ function getOrdersId(){
         $orderPayments = $orderPaymentRepo->getOrdersWithPaymentCreditCard($orders, $paymentWayId);
         
         $dto = new DataDTO($orderRepo, $orderPaymentRepo, $customerRepo);
-        $data = $dto->generateData($orderPayments[0]);
+        $data = $dto->generateData($orderPayments[2]);
         
-        $handler = new PaymentHandle();
+        $handler = new PaymentHandle($orderPaymentRepo, $orderRepo);
         $service = new PaymentService($handler);
 
         $service->processarPagamentos($data);

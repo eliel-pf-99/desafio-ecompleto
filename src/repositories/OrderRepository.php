@@ -19,4 +19,15 @@ class OrderRepository extends BaseRepository
       $args = array_merge($storeIds, [$situation]);
       return $this->db->query($sql, $args);
    }
+
+   /**
+     * Função que altera o valor na coluna id_situacao
+     * @param array $params -> array contendo valores a serem atualizados.
+     * @return bool -> retorna se a alteração foi feita com sucesso.
+     */
+    public function updateOrder(array $params): bool{
+      $sql = "UPDATE {$this->table} SET id_situacao = ? WHERE id = ?";
+      $result = $this->db->query($sql, $params);
+      return ($result !== false);
+    }
 }

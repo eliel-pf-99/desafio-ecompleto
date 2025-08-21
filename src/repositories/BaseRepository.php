@@ -35,6 +35,17 @@ class BaseRepository
             $this->log->error("Falha em executar busca: {$sql} - Erro: {$e->getMessage()}");
             throw new Exception("Erro interno do sistema. Tente novamente mais tarde.", 0, $e);
         }
-        
+    }
+
+    /**
+     * Função que altera o valor na coluna informada
+     * @param string $column_name -> tabela que deve ser alterada.
+     * @param array $params -> array contendo valores a serem atualizados.
+     * @return bool -> retorna se a alteração foi feita com sucesso.
+     */
+    public function updateById(string $column_name, array $params){
+      $sql = "UPDATE {$this->table} SET {$column_name} = ? WHERE id = ?";
+      $result = $this->db->query($sql, $params);
+      return ($result !== false);
     }
 }

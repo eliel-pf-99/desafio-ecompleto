@@ -42,8 +42,6 @@ class UtilityRepository extends BaseRepository
             throw new Exception("Erro no sistema. Tente mais tarde.", 0, $e);
         }
         
-        
-        
         return $result[0]['id'];
     }
 }

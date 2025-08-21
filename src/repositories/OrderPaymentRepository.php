@@ -21,4 +21,15 @@ class OrderPaymentRepository extends BaseRepository
       $result = $this->db->query($sql, $args);
       return array_column($result, 'id');
     }
+
+    /**
+     * Função que retorna o id do pedido de pagamento buscando pelo id do pedido
+     * @param string $paymentId
+     * @return array
+     */
+    public function findOrderPaymentIdByOrderId(string $paymentId): int{
+      $sql = "SELECT id FROM {$this->table} WHERE id_pedido = ?";
+      $result = $this->db->query($sql, [$paymentId]);
+      return $result[0]['id'];
+    }
 }

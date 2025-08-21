@@ -29,7 +29,7 @@ class Loggers{
 
         if(!isset($instance->logger)){
             $logger = new Logger('App');
-            $logger->pushHandler(new StreamHandler(__DIR__ . '/../../logs/app.log', Logger::WARNING));
+            $logger->pushHandler(new StreamHandler(__DIR__ . '\logs\app.log', Logger::WARNING));
             $instance->logger = $logger;
         }
 
