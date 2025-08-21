@@ -15,13 +15,13 @@ function getOrdersId(){
     $customerRepo = new CustomerRepository($db);
     $orderRepo = new OrderRepository($db);
     $orderPaymentRepo = new OrderPaymentRepository($db);
-    $baseRepository = new BaseRepository($db);
+    $utilityRepo = new UtilityRepository($db);
 
     try {
         
-        $gatewayId = $baseRepository->findByDescription('PAGCOMPLETO', 'gateways');
-        $paymentSituationId = $baseRepository->findByDescription('Aguardando Pagamento', 'pedido_situacao');
-        $paymentWayId = $baseRepository->findByDescription('Cartão de Crédito', 'formas_pagamento');
+        $gatewayId = $utilityRepo->findIdByDescription('PAGCOMPLETO', 'gateways');
+        $paymentSituationId = $utilityRepo->findIdByDescription('Aguardando Pagamento', 'pedido_situacao');
+        $paymentWayId = $utilityRepo->findIdByDescription('Cartão de Crédito', 'formas_pagamento');
 
         
         
@@ -39,16 +39,11 @@ function getOrdersId(){
 
         
         
-        $storeIds = $baseRepository->getStoreIdsByGatewayId($gatewayId);
-        $orders = $orderRepo->getOrdersByStoreIds($storeIds);
-
+        $storeIds = $utilityRepo->getStoreIdsByGatewayId($gatewayId);
+        $orders = $orderRepo->getOrdersByStoreIdsAndSituation($storeIds, $paymentSituationId);
+        $orderPayments = $orderPaymentRepo->getOrdersWithPaymentCreditCard($orders, $paymentWayId);
         
-        $filteredOrders = $orders->filterBySituation($paymentSituationId)->getData();
-
-        
-        $orderPayments = $orderPaymentRepo->getOrdersPaymentByStoreIds($filteredOrders)->filterByWay($paymentWayId)->getData();
         $dto = new DataDTO($orderRepo, $orderPaymentRepo, $customerRepo);
-        
         $data = $dto->generateData($orderPayments[1]);
         echo "<pre>";
         print_r($data);

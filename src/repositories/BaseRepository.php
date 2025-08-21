@@ -1,39 +1,27 @@
 <?php
 /**
- * Classe base de repositório, tendo metodos auxíliares ao gerenciamento do banco de dados.
+ * Classe base de repositório, sendo a base do gerenciamento do banco de dados.
  */
 class BaseRepository
 {
-    public function __construct(private Database $db){}
+   protected Database $db;
+   protected string $table;
 
-    /**
-     * Função responsável por encontrar ids pela sua descrição
-     * Tendo como argumento a descrição e o nome da tabela onde buscar.
-     * @param string $description
-     * @param string $table
-     * @return int 
-     */
-    public function findByDescription(string $description, string $table): int{
-        $safeTable = pg_escape_string($table);
-        $result = $this->db->query("SELECT id FROM $safeTable WHERE descricao=?", [$description]);
+   /** Construtor injetando a dependencia do banco de dados */
+   public function __construct(Database $db){
+        $this->db = $db;
+   }
+
+   /** Função base para encontrar por id */
+   public function findById(int $id): array
+    {
+        $sql = "SELECT * FROM {$this->table} WHERE id = ?";
+        $result = $this->db->query($sql, [$id]);
         
-        if(empty($result)){
-            return null;
+        if (empty($result)) {
+            throw new Exception("Registro na tabela {$this->table} não encontrado.");
         }
         
-        return $result[0]['id'];
-    }
-
-    /**
-     * Função que busca pelas lojas se baseando id do gateway
-     * @param int $gatewayId
-     * @return array
-     */
-    public function getStoreIdsByGatewayId(int $gatewayId): array{
-        $stores = $this->db->query("SELECT id_loja FROM lojas_gateway WHERE id_gateway=?", [$gatewayId]);
-
-        return array_map(function($store){
-            return $store['id_loja'];
-        },$stores);
+        return $result[0];
     }
 }

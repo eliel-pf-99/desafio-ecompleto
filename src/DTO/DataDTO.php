@@ -49,9 +49,9 @@ class DataDTO
      * @return array
      */
     public function generateData(int $orderPaymentId): array{
-        $this->orderPayment = $this->orderPaymentRepo->getOrderPaymentById($orderPaymentId);
-        $this->order = $this->orderRepo->getOderById($this->orderPayment['id_pedido']);
-        $this->customer = $this->customerRepo->getCustomerById($this->order['id_cliente']);
+        $this->orderPayment = $this->orderPaymentRepo->findById($orderPaymentId);
+        $this->order = $this->orderRepo->findById($this->orderPayment['id_pedido']);
+        $this->customer = $this->customerRepo->findById($this->order['id_cliente']);
 
         $orderData = $this->createDataOrder();
         $customerData = ['customer' => $this->createDataCustomer()];
