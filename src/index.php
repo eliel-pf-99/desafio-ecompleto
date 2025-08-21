@@ -2,6 +2,8 @@
 
 require_once __DIR__ . '\..\vendor\autoload.php';
 
+  
+
 /**Carregamento das variaveis de ambiente. */
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
@@ -12,6 +14,7 @@ $db = new Database();
 
 function getOrdersId(){
     global $db;
+    
     $customerRepo = new CustomerRepository($db);
     $orderRepo = new OrderRepository($db);
     $orderPaymentRepo = new OrderPaymentRepository($db);

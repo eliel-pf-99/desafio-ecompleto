@@ -1,5 +1,9 @@
 <?php
 
+require_once __DIR__ . '\..\..\vendor\autoload.php';
+
+/**Carrega o monolog */
+use Monolog\Logger;
 
 
 /**
@@ -8,6 +12,7 @@
 class Database
 {
     private PDO $connection;
+    private Logger $log;
 
     /**
      * Construtor responsável pela conexão com o banco de dados.
@@ -23,13 +28,16 @@ class Database
 
         $dsn = "pgsql:host={$host};dbname={$dbname}";
 
+        $this->log = Loggers::getLogger();
+
         try {
             $this->connection = new PDO($dsn, $user, $password);
             $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->connection->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
         } catch (PDOException $e) {
-            die("Erro de conexão com o banco de dados: " . $e->getMessage());
+            $this->log->error("Não foi possível se conectar ao banco de dados");
+            throw $e;
         }
     }
 
@@ -50,7 +58,8 @@ class Database
             $stmt->execute($params);
             return $stmt->fetchAll();
         } catch (PDOException $e) {
-            throw new Exception("Erro na consulta do banco de dados: " . $sql . " " . $e->getMessage());
+            $this->log->error("Erro na consulta do banco de dados: " . $sql . " " . $e->getMessage());
+            throw new Exception("Erro no sistema. Tente mais tarde", 0, $e);
         }
     }
 }
