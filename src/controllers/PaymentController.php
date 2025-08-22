@@ -33,35 +33,14 @@ class PaymentController
         }
 
         try {
-            $orderId = (int) $payload['order_id'];
-
-            $order = $this->orderRepo->findById($orderId);
-            
-            $processingStatusId = $this->utilityRepo->findIdByDescription('Aguardando Pagamento', 'pedido_situacao');
-            
-            if ($order['id_situacao'] !== $processingStatusId) {
-                http_response_code(409);
-                echo json_encode(['error' => 'Pedido não está no estado correto para processamento.']);
-                return;
-            }
-            
-            $pagcompletoGatewayId = $this->utilityRepo->findIdByDescription('PAGCOMPLETO', 'gateways');
-            $validStores = $this->utilityRepo->getStoreIdsByGatewayId($pagcompletoGatewayId);
-            
-            if (!in_array($order['id_loja'], $validStores)) {
-                http_response_code(403);
-                echo json_encode(['error' => 'Loja não autorizada a usar este gateway.']);
-                return;
-            }
-
-            $data = $this->dataDTO->generateData($orderId);
-            $result = $this->paymentService->processarPagamentos($data);
+            $result = $this->paymentService->processarPagamentos($payload);
             
             http_response_code(200);
             echo json_encode($result);
 
         } catch (Exception $e) {
-            http_response_code(500);
+            $statusCode = $e->getCode() ?: 500;
+            http_response_code($statusCode);
             echo json_encode(['error' => true, 'message' => $e->getMessage()]);
         }
     }
