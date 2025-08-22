@@ -44,4 +44,26 @@ class UtilityRepository extends BaseRepository
         
         return $result[0]['id'];
     }
+
+    /**
+     * Função que busca a situação pelo id
+     * @param int $id
+     * @param string $table
+     * @return string
+     *  */
+    public function findSituationById(int $id, string $table): string
+    {
+        $sql = "SELECT descricao FROM $table WHERE id = ?";
+        try{
+            $result = $this->db->query($sql, [$id]);
+            if (empty($result)) {
+                throw new Exception("Situação não encontrada.");
+            }
+        } catch(Exception $e){
+            $this->log->error("Falha em executar busca: {$sql} - Erro: {$e->getMessage()}");
+            throw new Exception("Erro no sistema. Tente mais tarde.", 0, $e);
+        }
+        
+        return $result[0]['descricao'];
+    }
 }

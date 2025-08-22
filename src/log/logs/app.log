@@ -11,3 +11,6 @@
 [2025-08-21T20:23:05.123820+02:00] App.ERROR: Erro na chamada da API: Erro no sistema. Tente mais tarde [] []
 [2025-08-21T20:24:12.532247+02:00] App.ERROR: Erro na consulta do banco de dados: UPDATE pedidos SET pedidos = ? WHERE id = ? SQLSTATE[42703]: Undefined column: 7 ERRO:  coluna "pedidos" da relação "pedidos" não existe LINE 1: UPDATE pedidos SET pedidos = $1 WHERE id = $2                            ^ [] []
 [2025-08-21T20:24:12.533445+02:00] App.ERROR: Erro na chamada da API: Erro no sistema. Tente mais tarde [] []
+[2025-08-22T01:36:03.307968+02:00] App.ERROR: Erro na consulta do banco de dados: SELECT id FROM situacoes WHERE descricao = ? SQLSTATE[42P01]: Undefined table: 7 ERRO:  relação "situacoes" não existe LINE 1: SELECT id FROM situacoes WHERE descricao = $1                        ^ [] []
+[2025-08-22T01:36:03.370459+02:00] App.ERROR: Falha em executar busca: SELECT id FROM situacoes WHERE descricao = ? - Erro: Erro no sistema. Tente mais tarde [] []
+[2025-08-22T01:38:12.729225+02:00] App.ERROR: Falha em executar busca: SELECT id FROM pedido_situacao WHERE descricao = ? - Erro: Descrição não encontrada. [] []

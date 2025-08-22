@@ -16,7 +16,7 @@ class PaymentService{
      * Construtor que obtém instancia do Logger e declara a url do endpoint 
      * @param PaymentHandle $handler
      * */
-    public function __construct(private PaymentHandle $handler){
+    public function __construct(private PaymentHandle $handler, private ResponseDTO $responseDTO){
         $this->log = Loggers::getLogger();
         $this->api_endpoint = $_ENV['API_ENDPOINT'] . $_ENV['API_TOKEN'];
     }
@@ -60,7 +60,8 @@ class PaymentService{
         try{
             $response = $this->chamadaAPI($data);
             $decodedResponse = json_decode($response);
-            return $this->handler->handle($decodedResponse, $data['external_order_id']);
+            $result = $this->handler->handle($decodedResponse, $data['external_order_id']);
+            return $this->responseDTO->getResponseDTO($result);
         } catch(Exception $e){
             $this->log->error("Erro na chamada da API: {$e->getMessage()}");
             throw new Exception("Erro no sistema. Tente mais tarde.", 0, $e);
