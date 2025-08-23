@@ -1,4 +1,5 @@
 <?php
+namespace App\Router;
 
 /**
  * Classe responsável por gerenciar e despachar rotas da aplicação.
@@ -38,11 +39,21 @@ class Router
         $uri = strtok($_SERVER['REQUEST_URI'], '?');
         $method = $_SERVER['REQUEST_METHOD'];
 
+        
         if (isset($this->routes[$method][$uri])) {
             $callback = $this->routes[$method][$uri];
-            call_user_func($callback);
+
+            $args = [];
+
+            if($method === 'POST') {
+                $requestBody = file_get_contents('php://input');
+                $requestData = json_decode($requestBody, true) ?? [];
+                $args = $requestData;
+            }
+
+            call_user_func($callback, $args);
         } else {
             throw new Exception("404 - Rota não encontrada: {$uri}");
-        }
+        } 
     }
 }

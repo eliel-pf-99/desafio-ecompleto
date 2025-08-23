@@ -1,7 +1,13 @@
 <?php
 
+namespace App\DTO;
+
+use App\Validation\DataValidator;
+use \Exception;
+
 /**
- * Classe DataOrder, responsável por validar e tranferir dados do pedido e do pagamento
+ * @class DataOrder
+ * Classe responsável por validar e tranferir dados do pedido e do pagamento
  */
 class DataOrder
 {
@@ -19,6 +25,7 @@ class DataOrder
      * @param array $orderPayment
      * @param array $order
      * @return DataOrder
+     * @throws Exception
      */
     public static function create(array $orderPayment, array $order): self {
 
@@ -29,40 +36,40 @@ class DataOrder
         $card_expiration_date = $orderPayment['vencimento'];
         $card_holder_name = $orderPayment['nome_portador'];
 
-        // Validação do cartão de crédito
-        // if (!DataValidator::validateCreditCard($card_number)) {
-        //     throw new Exception("Cartão de crédito inválido.");
-        // }
+        // Validação do cartão de créditos
+        if (!DataValidator::validateCreditCard($card_number)) {
+            throw new Exception("Cartão de crédito inválido.", 400);
+        }
 
         // Validação do CVV
         if (!DataValidator::validateCvv($card_cvv, $card_number)) {
-            throw new Exception("CVV inválido.");
+            throw new Exception("CVV inválido.", 400);
         }
 
         // Validação da data de validade
         if (empty($card_expiration_date)) {
-            throw new Exception("Data de validade do cartão não pode estar vazia.");
+            throw new Exception("Data de validade do cartão não pode estar vazia.", 400);
         }
         
         // A data de validade vem no formato YYYY-MM
         // formato MMYY para usar a função isExpired
         $expirationPrepared = self::vencimentoPrepare($card_expiration_date);
 
-        // if (DataValidator::isExpired($expirationPrepared)) {
-        //     throw new Exception("Cartão com validade vencida.");
-        // }
+        if (DataValidator::isExpired($expirationPrepared)) {
+            throw new Exception("Cartão com validade vencida.", 400);
+        }
 
         // Validação de outros dados
         if (!$external_order_id) {
-            throw new Exception("Id do pedido não pode ser nulo.");
+            throw new Exception("Id do pedido não pode ser nulo.", 400);
         }
 
         if (!$amount) {
-            throw new Exception("Valor do pedido não pode ser nulo.");
+            throw new Exception("Valor do pedido não pode ser nulo.", 400);
         }
 
         if (!$card_holder_name) {
-            throw new Exception("Deve ser informado o nome do proprietário do cartão.");
+            throw new Exception("Deve ser informado o nome do proprietário do cartão.", 400);
         }
 
         return new self($external_order_id, $amount, $card_number, $card_cvv, $expirationPrepared, $card_holder_name);

@@ -1,27 +1,35 @@
 <?php
 
+namespace App\Services;
 require_once __DIR__ . '\..\..\vendor\autoload.php';
 
-/**Carrega o monolog */
+use App\Handlers\PaymentHandle;
+use App\DTO\ResponseDTO;
+use App\DTO\DataDTO;
+use App\Repositories\OrderRepository;
+use App\Repositories\UtilityRepository;
+use App\Log\Loggers;
 use Monolog\Logger;
+use stdClass;
+use Exception;
 
 /**
- * Classe responsável por fazer chamada na API e direcionar a resposta ao Handler
+ * @class PaymentService
+ * classe responsável pelas regras de negocio.
  */
 class PaymentService{
     private Logger $log;
     private string $api_endpoint;
 
     /** 
-     * Construtor que obtém instancia do Logger e declara a url do endpoint 
-     * @param PaymentHandle $handler
+     * Construtor que obtém instancia do Logger e declara a url do endpoint
      * */
     public function __construct(
         private PaymentHandle $handler,
         private DataDTO $dataDTO,
         private ResponseDTO $responseDTO,
         private UtilityRepository $utilityRepo,
-        private OrderRepository $orderRepo,){
+        private OrderRepository $orderRepo){
         $this->log = Loggers::getLogger();
         $this->api_endpoint = $_ENV['API_ENDPOINT'] . $_ENV['API_TOKEN'];
     }
@@ -31,8 +39,9 @@ class PaymentService{
      * Configura e realiza a chamada retronando a resposta
      * @param array $payload
      * @return json $response
+     * @throws Exception
      */
-    private function chamadaAPI($payload){
+    protected function chamadaAPI($payload){
         $jsonPayload = json_encode($payload);
 
         $ch = curl_init($this->api_endpoint);
@@ -55,6 +64,12 @@ class PaymentService{
         
     }
 
+    /**
+     * Função que verifica se a situaçõ do pedido enviado é de 'Aguardando Pagamento'
+     * @param array $order
+     * @return void
+     * @throws Exception
+     */
     private function filterSituation(array $order){
             $processingStatusId = $this->utilityRepo->findIdByDescription('Aguardando Pagamento', 'pedido_situacao');
 
@@ -63,6 +78,12 @@ class PaymentService{
             }
     }
 
+    /**
+     * Função que verifica se o pedido enviado pertence as lojas que implementam a API
+     * @param array $order
+     * @return void
+     * @throws Exception
+     */
     private function filterStores(array $order){
         $pagcompletoGatewayId = $this->utilityRepo->findIdByDescription('PAGCOMPLETO', 'gateways');
         $validStores = $this->utilityRepo->getStoreIdsByGatewayId($pagcompletoGatewayId);
@@ -72,7 +93,13 @@ class PaymentService{
         }
     }
 
-    private function validatePayload(array $payload): array{
+    /**
+     * Função que valida o payload recebido pelo Controller
+     * @param array $payload
+     * @return array
+     * @throws Exception
+     */
+    protected function validatePayload(array $payload): array{
             $orderId = (int) $payload['order_id'];
             $order = $this->orderRepo->findById($orderId);
 
@@ -88,6 +115,7 @@ class PaymentService{
      * Obtém o retorno da chamada da API e encaminha para o Handler.
      * @param array $data
      * @return array
+     * @throws Exception
      */
     public function processarPagamentos(array $payload): array{
         try{
@@ -98,6 +126,11 @@ class PaymentService{
             return $this->responseDTO->getResponseDTO($result);
         } catch(Exception $e){
             $this->log->error("Erro na chamada da API: {$e->getMessage()}");
+            $statusCode = $e->getCode() ?: false;
+            if($statusCode){
+                throw $e;
+            }
+            
             throw new Exception("Erro no sistema. Tente mais tarde.", 0, $e);
         }   
     }

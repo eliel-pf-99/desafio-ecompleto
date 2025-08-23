@@ -1,11 +1,19 @@
 <?php
 
+namespace App\Repositories;
+
 require_once __DIR__ . '\..\..\vendor\autoload.php';
 
-/**Carrega o monolog */
+/**
+ * Carrega o monolog
+ */
 use Monolog\Logger;
+use mysql_xdevapi\Exception;
 
-/** Classe de utilitarios para auxilio dos repositorios. */
+/**
+ * @class UtilityRepository
+ * Classe de utilitarios para auxilio dos repositorios.
+ */
 class UtilityRepository extends BaseRepository
 {
     /**
@@ -28,6 +36,7 @@ class UtilityRepository extends BaseRepository
      * @param string $description
      * @param string $table
      * @return int
+     * @throws Exception
      *  */
     public function findIdByDescription(string $description, string $table): int
     {
@@ -50,6 +59,7 @@ class UtilityRepository extends BaseRepository
      * @param int $id
      * @param string $table
      * @return string
+     * @throws Exception
      *  */
     public function findSituationById(int $id, string $table): string
     {

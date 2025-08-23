@@ -1,6 +1,9 @@
 <?php
 
+namespace App\Repositories;
+
 /**
+ * @class OrderRepository
  * Classe responsável por filtrar e tratar os pedidos que devem ser processados.
  */
 class OrderRepository extends BaseRepository

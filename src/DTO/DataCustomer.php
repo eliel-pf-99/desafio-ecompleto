@@ -1,7 +1,12 @@
 <?php
 
+namespace App\DTO;
+
+use App\Validation\DataValidator;
+
 /**
- * Classe DataCustomer, responsável por validar e tranferir dados do cliente.
+ * @class DataCustomer,
+ * Classe responsável por validar e tranferir dados do cliente.
  */
 class DataCustomer
 {
@@ -30,6 +35,7 @@ class DataCustomer
      * Method Factory para instanciar a classe DataCustomer
      * @param array $customer
      * @return DataCustomer
+     * @throws Exception
      */
     public static function create(array $customer): self
     {

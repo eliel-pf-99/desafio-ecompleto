@@ -2,6 +2,19 @@
 
 require_once __DIR__ . '\vendor\autoload.php';
 
+use App\Router\Router;
+use App\Controllers\PaymentController;
+use App\Services\PaymentService;
+use App\Handlers\PaymentHandle;
+use App\Repositories\CustomerRepository;
+use App\Repositories\OrderRepository;
+use App\Repositories\OrderPaymentRepository;
+use App\Repositories\UtilityRepository;
+use App\DTO\DataDTO;
+use App\DTO\ResponseDTO;
+use App\Database\Database;
+
+
 $paymentUri = "/desafio-ecompleto/api/pagamento";
   
 
@@ -26,7 +39,13 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && strtok($_SERVER['REQUEST_URI'], '?')
     $paymentHandler = new PaymentHandle($orderPaymentRepo, $orderRepo);
 
     /**Instancia o Service */
-    $paymentService = new PaymentService($paymentHandler, $responseDTO);
+    $paymentService = new PaymentService(
+        $paymentHandler,
+        $dataDTO,
+        $responseDTO,
+        $utilityRepo,
+        $orderRepo
+    );
 
     /**Instancia o Controller */
     $paymentController = new PaymentController($paymentService, $orderRepo, $utilityRepo, $dataDTO);
@@ -41,9 +60,9 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && strtok($_SERVER['REQUEST_URI'], '?')
     try{
         $router->dispatch();
     } catch (Exception $e) {
-        // Se o roteador não encontrar uma rota correspondente, ele lança uma exceção.
-        http_response_code(404);
-        echo "<h1>Erro: " . htmlspecialchars($e->getMessage()) . "</h1>";
+        $statusCode = $e->getCode() ?: 500;
+        http_response_code($statusCode);
+        echo json_encode(['error' => true, 'message' => $e->getMessage()]);
     }
 
 } else {

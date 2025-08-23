@@ -1,14 +1,19 @@
 <?php
 
+namespace App\Repositories;
+
 require_once __DIR__ . '\..\..\vendor\autoload.php';
 
-/**Carrega o monolog */
+use App\Database\Database;
+use Exception;
+use App\Log\Loggers;
 use Monolog\Logger;
 
 /**
+ * @class BaseRepository
  * Classe base de repositório, sendo a base do gerenciamento do banco de dados.
  */
-class BaseRepository
+abstract class BaseRepository
 {
    protected Database $db;
    protected string $table;
@@ -20,7 +25,12 @@ class BaseRepository
         $this->log = Loggers::getLogger();
    }
 
-   /** Função base para encontrar por id */
+   /**
+    * Função base para encontrar por id
+    * @param int $id
+    * @return array
+    * @throws Exception
+    */
    public function findById(int $id): array
     {
         $sql = "SELECT * FROM {$this->table} WHERE id = ?";

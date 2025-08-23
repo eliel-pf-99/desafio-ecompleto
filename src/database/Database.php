@@ -1,12 +1,20 @@
 <?php
 
-require_once __DIR__ . '\..\..\vendor\autoload.php';
+namespace App\Database;
+
+require __DIR__ . '/../../vendor/autoload.php';
 
 /**Carrega o monolog */
+
+use App\Log\Loggers;
+use Exception;
 use Monolog\Logger;
+use PDO;
+use PDOException;
 
 
 /**
+ * @class Database
  * Classe responsável por gerenciar a conexão com o banco de dados.
  */
 class Database
@@ -51,6 +59,13 @@ class Database
         return $this->connection;
     }
 
+    /**
+    * Função responsável por tratar e executar SQL no base de dados
+     * @param string $sql
+     * @param array $params
+     * @return array
+     * @throws Exception
+     */
     public function query(string $sql, array $params = []): array
     {
         try {

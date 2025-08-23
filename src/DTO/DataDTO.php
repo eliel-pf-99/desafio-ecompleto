@@ -1,7 +1,14 @@
 <?php
 
+namespace App\DTO;
+
+use App\Repositories\OrderPaymentRepository;
+use App\Repositories\OrderRepository;
+use App\Repositories\CustomerRepository;
+use \Exception;
 /**
- * Classe DataDTO, responsável por realizar a transferência dos dados do pedido e cliente
+ * @class DataDTO
+ * Classe responsável por realizar a transferência dos dados do pedido e cliente
  * para chamada de API
  */
 class DataDTO
@@ -20,6 +27,7 @@ class DataDTO
     /**
      * Função que cria um array com os dados do pedidos_pagamentos e pedidos
      * @return array
+     * @throws Exception
      */
     private function createDataOrder(): array{
         try{
@@ -33,13 +41,14 @@ class DataDTO
     /**
      * Função que cria um array com os dados do cliente
      * @return array
+     * @throws Exception
      */
     private function createDataCustomer(): array{
         try{
             $dataCustomer = DataCustomer::create($this->customer);
             return $dataCustomer->toArray();
         } catch(Excpetion $e){
-            throw new Exception("Dados do cliente inválidos: " . $e->getMessage());
+            throw new Exception("Dados do cliente inválidos: " . $e->getMessage(), 400);
         }
     }
 
@@ -49,14 +58,19 @@ class DataDTO
      * @return array
      */
     public function generateData(int $orderId): array{
-        $this->order = $this->orderRepo->findById($orderId);
-        $this->orderPayment = $this->orderPaymentRepo->findById($this->orderPaymentRepo->findOrderPaymentIdByOrderId($orderId));
-        $this->customer = $this->customerRepo->findById($this->order['id_cliente']);
-
-        $orderData = $this->createDataOrder();
-        $customerData = ['customer' => $this->createDataCustomer()];
-
-        return array_merge($orderData, $customerData);
+        try{
+            $this->order = $this->orderRepo->findById($orderId);
+            $this->orderPayment = $this->orderPaymentRepo->findById($this->orderPaymentRepo->findOrderPaymentIdByOrderId($orderId));
+            $this->customer = $this->customerRepo->findById($this->order['id_cliente']);
+    
+            $orderData = $this->createDataOrder();
+            $customerData = ['customer' => $this->createDataCustomer()];
+    
+            return array_merge($orderData, $customerData);
+            
+        } catch(Excpetion $e){
+            throw new Exception("Dados do cliente inválidos: " . $e->getMessage(), 400);
+        }
     }
 
 }

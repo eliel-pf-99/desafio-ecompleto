@@ -1,5 +1,11 @@
 <?php
 
+namespace App\Validation;
+
+/**
+ * @class DataValidator
+ * Classe responsavél por conter metodos para validação da entrada de dados.
+ */
 class DataValidator
 {
     /**

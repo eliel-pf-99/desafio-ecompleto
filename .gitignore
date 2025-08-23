@@ -5,3 +5,4 @@ composer.phar
 .DS_Store
 .vscode/
 composer.lock
+/.phpunit.chace/

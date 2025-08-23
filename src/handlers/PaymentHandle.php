@@ -1,6 +1,15 @@
 <?php
 
-/**Classe responsável por alterar a base de dados conforme resposta do Service */
+namespace App\Handlers;
+
+use App\Repositories\OrderPaymentRepository;
+use App\Repositories\OrderRepository;
+use stdClass;
+
+/**
+ * @class PaymentHandle
+ * Classe responsável por alterar a base de dados conforme resposta do Service
+ */
 class PaymentHandle
 {
     public function __construct(private OrderPaymentRepository $orderPaymentRepo, private OrderRepository $orderRepo){}
@@ -12,7 +21,6 @@ class PaymentHandle
      * @return bool -> retorna se não houve falha na atualização
      */
     private function updateOrderPayment(int $orderPaymentId, stdClass $value): bool {
-        //deve se alterar na coluna retorno_intermediador o retorno da API 
         $content = json_encode($value);
         return $this->orderPaymentRepo->updateById('retorno_intermediador', ["$content", $orderPaymentId]); 
     }
@@ -32,6 +40,7 @@ class PaymentHandle
      * @param stdClass $payload -> resposta da API
      * @param string $orderId -> id do pedido
      * @return array
+     * @throws Exception
      */
     public function handle(stdClass $payload, string $orderId): array{
         if($payload->Error){

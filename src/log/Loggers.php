@@ -1,15 +1,18 @@
 <?php
 
-require_once __DIR__ . '\..\..\vendor\autoload.php';
+namespace App\Log;
 
 /**Carrega o monolog */
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
-/** Classe responsável por instanciar e compartilhar o Logger, usando o padrão Singleton */
+/**
+ * @class Loggers
+ * Classe responsável por instanciar e compartilhar o Logger, usando o padrão Singleton
+ */
 class Loggers{
     /**Propriedades do Logger */
-    private static ?Loggers $instance = null;   
+    private static ?Loggers $instance = null;
     private Logger $logger;
 
     /**Funão Clone privado para evitar duplicação da instancia */
@@ -23,7 +26,10 @@ class Loggers{
         return self::$instance;
     }
 
-    /**Função estatica que retorna o Logger */
+    /**
+     * Função estatica que retorna o Logger
+     * @return Logger
+     */
     public static function getLogger(): Logger {
         $instance = self::getInstance();
 

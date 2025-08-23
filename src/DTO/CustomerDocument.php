@@ -1,7 +1,12 @@
 <?php
 
+namespace App\DTO;
+
+use App\Validation\DataValidator;
+
 /**
- * Classe CustomerDocument, responsável por validar e tranferir dados do documento do cliente.
+ * @class CustomerDocument
+ * Classe responsável por validar e tranferir dados do documento do cliente.
  */
 class CustomerDocument
 {
@@ -12,6 +17,7 @@ class CustomerDocument
      * A classe verifica e define o tipo de documento baseado em sua numeração
      * @param string $documentNumber
      * @return CustomerDocument
+     * @throws Exception
      */
     public static function createFromNumber(string $documentNumber): self
     {
